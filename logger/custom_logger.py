@@ -5,7 +5,7 @@ import structlog
 
 print(os.getcwd())
 class CustomLogger:
-    def __init__(self, log_dir="logs"):
+    def __init__(self, log_dir="logs", max_logs=5):
         # Ensure logs directory exists
         self.logs_dir = os.path.join(os.getcwd(), log_dir)
         os.makedirs(self.logs_dir, exist_ok=True)
@@ -13,6 +13,26 @@ class CustomLogger:
         # Timestamped log file (for persistence)
         log_file = f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
         self.log_file_path = os.path.join(self.logs_dir, log_file)
+        
+        self.max_logs = max_logs
+
+
+        self._cleanup_old_logs()
+
+    def _cleanup_old_logs(self):
+        """
+        Keeps only the latest `max_logs` files in the log directory.
+        """
+        log_files = sorted(
+            [f for f in os.listdir(self.logs_dir) if f.endswith(".log")],
+            key=lambda f: os.path.getmtime(os.path.join(self.logs_dir, f))
+        )
+
+        while len(log_files) > self.max_logs:
+            oldest = log_files.pop(0)   # remove oldest
+            os.remove(os.path.join(self.logs_dir, oldest))
+            print(f"Deleted old log file: {oldest}")
+
 
     def get_logger(self, name=__file__):
         logger_name = os.path.basename(name)
