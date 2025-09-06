@@ -34,7 +34,7 @@ class DocumentHandler:
         self.session_id = session_id or generate_session_id("session")
         self.session_path = os.path.join(self.data_dir, self.session_id)
         os.makedirs(self.session_path, exist_ok=True)
-        log.info("DocHandler initialized", session_id=self.session_id, session_path=self.session_path)
+        log.info("DocHandler initialized", session_id=self.session_id, session_dir = self.data_dir, session_path=self.session_path)
 
     def save_pdf(self, uploaded_file) -> str:
         try:
@@ -69,3 +69,34 @@ class DocumentHandler:
         
         
   
+      
+if __name__ == "__main__":
+    from pathlib import Path 
+    from io import BytesIO
+    
+    pdf_path = r"C:\\Users\\pramod\\Desktop\\KRISH_ACADEMY\\LLMOPS_Projects\\document_portal\\data\\document_analysis\\sample.pdf"
+    
+    # # # Dummy file wrapper to simulate uploaded file (Streamlit style)
+    class DummyFile:
+        def __init__(self, file_path):
+            self.name = Path(file_path).name
+            self._file_path = file_path
+
+        def getbuffer(self):
+            return open(self._file_path, "rb").read()
+    dummy_pdf = DummyFile(pdf_path)
+    
+    handler = DocumentHandler()
+    
+    try :
+        saved_path = handler.save_pdf(dummy_pdf)
+        print(saved_path)
+        read_pdf = handler.read_pdf(pdf_path)
+        print(read_pdf[:300])
+    except Exception as e:
+        print(f"error: {e}")
+
+    
+        
+    
+    

@@ -5,7 +5,7 @@ import structlog
 
 print(os.getcwd())
 class CustomLogger:
-    def __init__(self, log_dir="logs", max_logs=5):
+    def __init__(self, log_dir="logs", max_logs=3):
         # Ensure logs directory exists
         self.logs_dir = os.path.join(os.getcwd(), log_dir)
         os.makedirs(self.logs_dir, exist_ok=True)
