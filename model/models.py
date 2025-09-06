@@ -12,6 +12,7 @@ class Metadata(BaseModel):
     Language: str
     PageCount: Union[int, str]  # Can be "Not Available"
     SentimentTone: str
+    
 class ChangeFormat(BaseModel):
     Page: str
     Changes: str
