@@ -1,7 +1,7 @@
 from pathlib import Path 
 from io import BytesIO
 import os
-from src.document_ingestion.data_ingestion import DocumentHandler , DocumentComparator      # Your PDFHandler class
+from document_ingestion.data_ingestion_old import DocumentHandler , DocumentComparator      # Your PDFHandler class
 from src.document_analyzer.data_analysis import DocumentAnalyzer  # Your DocumentAnalyzer class
 from src.document_comparision.document_comparator import DocumentComparatorLLM  # Your DocumentAnalyzer class
 
@@ -82,6 +82,7 @@ def test_compare_documents():
     
     print("\n Comparison DataFrame:\n")
     print(df)
+    df.to_csv("data_comparator_output.csv")
 
 if __name__ == "__main__":
     test_compare_documents()
