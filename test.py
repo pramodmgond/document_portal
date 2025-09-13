@@ -1,9 +1,12 @@
 from pathlib import Path 
 from io import BytesIO
 import os
-from document_ingestion.data_ingestion_old import DocumentHandler , DocumentComparator      # Your PDFHandler class
+from src.document_ingestion.data_ingestion import ChatIngestor
+
 from src.document_analyzer.data_analysis import DocumentAnalyzer  # Your DocumentAnalyzer class
 from src.document_comparision.document_comparator import DocumentComparatorLLM  # Your DocumentAnalyzer class
+from src.document_chat.retrieval import ConversationalRAG
+
 
 
 # PDF_PATH = r"C:\\Users\\pramod\\Desktop\\KRISH_ACADEMY\\LLMOPS_Projects\\document_portal\\data\\document_analysis\\sample.pdf"
@@ -50,40 +53,103 @@ from src.document_comparision.document_comparator import DocumentComparatorLLM  
 
 
 # ---- Step 1: Save and combine PDFs ---- #
-def test_compare_documents():
-    ref_path = Path("C:\\Users\\pramod\\Desktop\\KRISH_ACADEMY\\LLMOPS_Projects\\document_portal\\data\\document_compare\\Long_Report_V1.pdf")
-    act_path = Path("C:\\Users\\pramod\\Desktop\\KRISH_ACADEMY\\LLMOPS_Projects\\document_portal\\data\\document_compare\\Long_Report_V2.pdf")
+# def test_compare_documents():
+#     ref_path = Path("C:\\Users\\pramod\\Desktop\\KRISH_ACADEMY\\LLMOPS_Projects\\document_portal\\data\\document_compare\\Long_Report_V1.pdf")
+#     act_path = Path("C:\\Users\\pramod\\Desktop\\KRISH_ACADEMY\\LLMOPS_Projects\\document_portal\\data\\document_compare\\Long_Report_V2.pdf")
 
-    # Wrap them like Streamlit UploadedFile-style
-    class FakeUpload:
-        def __init__(self, file_path: Path):
-            self.name = file_path.name
-            self._buffer = file_path.read_bytes()
+#     # Wrap them like Streamlit UploadedFile-style
+#     class FakeUpload:
+#         def __init__(self, file_path: Path):
+#             self.name = file_path.name
+#             self._buffer = file_path.read_bytes()
 
-        def getbuffer(self):
-            return self._buffer
+#         def getbuffer(self):
+#             return self._buffer
 
-    # Instantiate
-    comparator = DocumentComparator()
-    ref_upload = FakeUpload(ref_path)
-    act_upload = FakeUpload(act_path)
+#     # Instantiate
+#     comparator = DocumentComparator()
+#     ref_upload = FakeUpload(ref_path)
+#     act_upload = FakeUpload(act_path)
 
-    # Save files and combine
-    ref_file, act_file = comparator.save_uploaded_files(ref_upload, act_upload)
-    combined_text = comparator.combine_documents()
-    comparator.clean_old_sessions(keep_latest=3)
+#     # Save files and combine
+#     ref_file, act_file = comparator.save_uploaded_files(ref_upload, act_upload)
+#     combined_text = comparator.combine_documents()
+#     comparator.clean_old_sessions(keep_latest=3)
 
-    print("\n Combined Text Preview (First 1000 chars):\n")
-    print(combined_text[:1000])
+#     print("\n Combined Text Preview (First 1000 chars):\n")
+#     print(combined_text[:1000])
 
-    # ---- Step 2: Run LLM comparison ---- #
-    llm_comparator = DocumentComparatorLLM()
-    df = llm_comparator.compare_documents(combined_text[:5000])
+#     # ---- Step 2: Run LLM comparison ---- #
+#     llm_comparator = DocumentComparatorLLM()
+#     df = llm_comparator.compare_documents(combined_text[:5000])
     
-    print("\n Comparison DataFrame:\n")
-    print(df)
-    df.to_csv("data_comparator_output.csv")
+#     print("\n Comparison DataFrame:\n")
+#     print(df)
+#     df.to_csv("data_comparator_output.csv")
 
+# if __name__ == "__main__":
+#     test_compare_documents()
+    
+
+
+# ## testing for multidoc chat
+
+import sys
+
+def test_document_ingestion_and_rag():
+    try:
+        test_files = [
+            "data\document_chat\sample.pdf",
+            "data\document_chat\story.txt"
+
+        ]
+        
+                    # "data\\multi_doc_chat\\market_analysis_report.docx",
+
+            #         "data\\multi_doc_chat\\sample.pdf",
+            # "data\\multi_doc_chat\\state_of_the_union.txt"
+        
+        uploaded_files = []
+        
+        for file_path in test_files:
+            if Path(file_path).exists():
+                uploaded_files.append(open(file_path, "rb"))
+            else:
+                print(f"File does not exist: {file_path}")
+                
+        if not uploaded_files:
+            print("No valid files to upload.")
+            sys.exit(1)
+            
+        ingestor = ChatIngestor()
+        
+        retriever = ingestor.built_retriver(uploaded_files)
+
+        
+        
+        for f in uploaded_files:
+            f.close()
+                
+        session_id = "test_multi_doc_chat"
+        
+        rag = ConversationalRAG(session_id=session_id, retriever=retriever)
+        
+        question = "what are  Training Hardware & Carbon Footprint usen in the Open Foundation and Fine-Tuned Chat Model paper"
+        
+        answer=rag.invoke(question)
+        
+        print("\n Question:", question)
+        
+        print("Answer:", answer)
+        
+        if not uploaded_files:
+            print("No valid files to upload.")
+            sys.exit(1)
+            
+    except Exception as e:
+        print(f"Test failed: {str(e)}")
+        sys.exit(1)
+        
 if __name__ == "__main__":
-    test_compare_documents()
-    
+    test_document_ingestion_and_rag()
+ 

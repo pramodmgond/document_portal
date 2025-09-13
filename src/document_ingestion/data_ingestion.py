@@ -12,10 +12,14 @@ from langchain.schema import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from utils.model_loader import ModelLoader
-from logger import GLOBAL_LOGGER as log
+# from logger import GLOBAL_LOGGER as log
 from exception.custom_exception import DocumentPortalException
 from utils.file_io import generate_session_id, save_uploaded_files
 from utils.document_ops import load_documents, concat_for_analysis, concat_for_comparison
+
+from logger.custom_logger import CustomLogger
+from exception.custom_exception import DocumentPortalException
+log = CustomLogger().get_logger(__name__)
 
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 
@@ -95,7 +99,7 @@ class FaissManager:
         
 class ChatIngestor:
     def __init__( self,
-        temp_base: str = "data",
+        temp_base: str = "data/document_chat",
         faiss_base: str = "faiss_index",
         use_session_dirs: bool = True,
         session_id: Optional[str] = None,
@@ -155,14 +159,19 @@ class ChatIngestor:
             texts = [c.page_content for c in chunks]
             metas = [c.metadata for c in chunks]
             
+            index_existed = fm._exists()
+
+            
             try:
                 vs = fm.load_or_create(texts=texts, metadatas=metas)
             except Exception:
                 vs = fm.load_or_create(texts=texts, metadatas=metas)
                 
-            added = fm.add_documents(chunks)
-            log.info("FAISS index updated", added=added, index=str(self.faiss_dir))
-            
+            if index_existed:
+                added = fm.add_documents(chunks)   # only add new chunks
+            else:
+                added = 0  # already added in load_or_create
+                        
             return vs.as_retriever(search_type="similarity", search_kwargs={"k": k})
             
         except Exception as e:
