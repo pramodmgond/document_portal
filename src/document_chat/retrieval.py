@@ -10,14 +10,9 @@ from langchain_community.vectorstores import FAISS
 
 from utils.model_loader import ModelLoader
 from exception.custom_exception import DocumentPortalException
-# from logger import GLOBAL_LOGGER as log
+from logger import GLOBAL_LOGGER as log
 from prompt.prompt_library import PROMPT_REGISTRY
 from model.models import PromptType
-
-from logger.custom_logger import CustomLogger
-from exception.custom_exception import DocumentPortalException
-log = CustomLogger().get_logger(__name__)
-
 
 class ConversationalRAG:
     """

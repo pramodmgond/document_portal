@@ -19,7 +19,7 @@ from utils.document_ops import FastAPIFileAdapter,read_pdf_via_handler
 from logger import GLOBAL_LOGGER as log
 
 FAISS_BASE = os.getenv("FAISS_BASE", "faiss_index")
-UPLOAD_BASE = os.getenv("UPLOAD_BASE", "data")
+UPLOAD_BASE = os.getenv("UPLOAD_BASE", "data/document_chat")
 FAISS_INDEX_NAME = os.getenv("FAISS_INDEX_NAME", "index")  # <--- keep consistent with save_local()
 
 app = FastAPI(title="Document Portal API", version="0.1")
@@ -160,3 +160,4 @@ async def chat_query(
 # uvicorn main:app --reload
 # uvicorn api.main:app --port 8080 --reload    
 #uvicorn api.main:app --host 0.0.0.0 --port 8080 --reload
+# SET LLM_PROVIDER=google (set the environment variable)

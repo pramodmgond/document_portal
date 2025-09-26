@@ -150,6 +150,11 @@ def test_document_ingestion_and_rag():
         print(f"Test failed: {str(e)}")
         sys.exit(1)
         
+        
+        
+# 23 aug - day 13 - part 1
+        
 if __name__ == "__main__":
     test_document_ingestion_and_rag()
+    
  

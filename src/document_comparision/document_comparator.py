@@ -4,14 +4,12 @@ import pandas as pd
 from langchain_core.output_parsers import JsonOutputParser
 from langchain.output_parsers import OutputFixingParser
 from utils.model_loader import ModelLoader
-# from logger import GLOBAL_LOGGER as log
+from logger import GLOBAL_LOGGER as log
 from exception.custom_exception import DocumentPortalException
 from prompt.prompt_library import PROMPT_REGISTRY
 from model.models import SummaryResponse,PromptType
+from langchain_core.prompts import ChatPromptTemplate
 
-from logger.custom_logger import CustomLogger
-from exception.custom_exception import DocumentPortalException
-log = CustomLogger().get_logger(__name__)
 
 class DocumentComparatorLLM:
     def __init__(self):
@@ -21,6 +19,9 @@ class DocumentComparatorLLM:
         self.parser = JsonOutputParser(pydantic_object=SummaryResponse)
         self.fixing_parser = OutputFixingParser.from_llm(parser=self.parser, llm=self.llm)
         self.prompt = PROMPT_REGISTRY["document_comparison"]
+        self.qa_prompt: ChatPromptTemplate = PROMPT_REGISTRY[
+                PromptType.CONTEXT_QA.value
+            ]
         self.chain = self.prompt | self.llm | self.parser
         log.info("DocumentComparatorLLM initialized", model=self.llm)
 
