@@ -6,12 +6,8 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import uuid
 from typing import Iterable, List
-#from logger import GLOBAL_LOGGER as log
+from logger import GLOBAL_LOGGER as log
 from exception.custom_exception import DocumentPortalException
-#from langchain_openai import ChatOpenAI
-from logger.custom_logger import CustomLogger
-from exception.custom_exception import DocumentPortalException
-log = CustomLogger().get_logger(__name__)
 
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 
