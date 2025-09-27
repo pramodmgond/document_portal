@@ -18,7 +18,7 @@ from src.document_chat.retrieval import ConversationalRAG
 from utils.document_ops import FastAPIFileAdapter,read_pdf_via_handler
 from logger import GLOBAL_LOGGER as log
 
-FAISS_BASE = os.getenv("FAISS_BASE", "faiss_index")
+FAISS_BASE = os.getenv("FAISS_BASE", "faiss_index")  # Fiass Index 
 UPLOAD_BASE = os.getenv("UPLOAD_BASE", "data/document_chat")
 FAISS_INDEX_NAME = os.getenv("FAISS_INDEX_NAME", "index")  # <--- keep consistent with save_local()
 
